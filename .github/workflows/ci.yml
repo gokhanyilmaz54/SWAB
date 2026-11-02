@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          global-json-file: global.json
+
+      # Geçici SQL Server 2025 kapsayıcısı; parola her çalıştırmada üretilir, hiçbir yerde saklanmaz.
+      - name: Start SQL Server
+        run: |
+          SQL_PASSWORD="Aa1-$(openssl rand -hex 16)"
+          echo "::add-mask::$SQL_PASSWORD"
+          docker run -d --name sql -p 1433:1433 \
+            -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD="$SQL_PASSWORD" \
+            mcr.microsoft.com/mssql/server:2025-latest
+          echo "SWAB_TEST_SQL=Server=localhost,1433;User Id=sa;Password=$SQL_PASSWORD;TrustServerCertificate=True;Encrypt=True" >> "$GITHUB_ENV"
+
+      - name: Restore
+        run: dotnet restore --locked-mode
+
+      - name: Build
+        run: dotnet build --no-restore -warnaserror
+
+      - name: Wait for SQL Server
+        run: |
+          for i in $(seq 1 30); do
+            if (echo > /dev/tcp/localhost/1433) 2>/dev/null; then exit 0; fi
+            sleep 2
+          done
+          echo "SQL Server hazır değil" >&2
+          exit 1
+
+      - name: Test
+        run: dotnet test --no-build
+
+      - name: Vulnerability audit
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          if grep -E '^\s*>.*\s(High|Critical)\s' audit.txt; then
+            echo "Yüksek veya kritik açıklı paket bulundu" >&2
+            exit 1
+          fi

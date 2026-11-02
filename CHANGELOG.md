@@ -1,5 +1,12 @@
 # Değişiklik Kaydı
 
+## [2026-11-02] Çözüm iskeleti ve CI
+- Eklendi: Swab.sln, src/Swab.Web MVC projesi, tests/Swab.Tests test projesi ve ana sayfa smoke testi
+- Eklendi: global.json, .editorconfig, Directory.Build.props (nullable, uyarılar hata, NuGet audit, lock dosyaları)
+- Eklendi: GitHub Actions CI (salt okunur izin, SQL Server 2025 kapsayıcısı, güvenlik açığı denetimi) ve Dependabot ayarı
+- Değiştirildi: şablon örnek sayfaları kaldırıldı; hata sayfası Türkçeleştirildi ve ayrıntı göstermez hale getirildi
+- Etkilenen dosyalar: .github/, src/, tests/, Directory.Build.props, global.json, .editorconfig
+
 ## [2026-11-02] Plan genişletildi ve depo herkese açık hazırlandı
 - Eklendi: 2FA, e-posta değiştirme, admin kullanıcı yönetimi, düzenlenebilir KVKK belgeleri, onay kayıtları, veri indirme ve hesap silme görevleri
 - Eklendi: LICENSE, SECURITY.md ve herkese açık depo kuralları
