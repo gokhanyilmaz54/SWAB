@@ -4,7 +4,7 @@ Updated by the dispatcher. Order is the execution order.
 
 | ID | Title | Depends on | Status | Test model | Review | Human gate |
 |---|---|---|---|---|---|---|
-| [T-001](T-001.md) | Solution scaffold and CI | - | Todo | haiku | none | no |
+| [T-001](T-001.md) | Solution scaffold and CI | - | InProgress | haiku | none | no |
 | [T-002](T-002.md) | Database foundation and schema | T-001 | Todo | haiku | none | no |
 | [T-003](T-003.md) | Structured logging and error handling | T-001 | Todo | haiku | none | no |
 | [T-004](T-004.md) | Security pipeline baseline | T-001, T-003 | Todo | sonnet | sonnet | no |
